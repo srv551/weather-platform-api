@@ -122,6 +122,7 @@ Configuration precedence
 - Environment variables
 
 📈 Observability:
+
 The API is instrumented with OpenTelemetry:
 - Traces: HTTP requests and outbound calls
 - Metrics: runtime, HTTP, and custom metrics
