@@ -101,34 +101,34 @@ dotnet run --project WeatherApi.Api
 ###4️⃣ Open API documentation
 
 Scalar UI:
-https://localhost:<port>/docs
+- https://localhost:<port>/docs
 
 OpenAPI JSON:
-/openapi/v1.json
+- /openapi/v1.json
 
 🔐 Configuration & Secrets
-Secrets are never committed to source control.
+- Secrets are never committed to source control.
 
 Supported approaches:
-  appsettings.Local.json (ignored by Git)
-  dotnet user-secrets (local development)
-  Environment variables:
-    WeatherApi__ApiKey
+- appsettings.Local.json (ignored by Git)
+- dotnet user-secrets (local development)
+- Environment variables:
+  - WeatherApi__ApiKey
 
 Configuration precedence
-  appsettings.json
-  appsettings.{Environment}.json
-  User Secrets (Development only)
-  Environment variables
+- appsettings.json
+- appsettings.{Environment}.json
+- User Secrets (Development only)
+- Environment variables
 
 📈 Observability
 The API is instrumented with OpenTelemetry:
-  Traces: HTTP requests and outbound calls
-  Metrics: runtime, HTTP, and custom metrics
-  Logs: structured logs with trace correlation
+- Traces: HTTP requests and outbound calls
+- Metrics: runtime, HTTP, and custom metrics
+- Logs: structured logs with trace correlation
 
 Metrics endpoint:
-  /metrics
+- /metrics
 (Prometheus-compatible)
 
 🚦 Rate Limiting
@@ -137,20 +137,20 @@ Limits are configurable and applied consistently across endpoints.
 
 🧪 Continuous Integration
 The repository includes a GitHub Actions CI pipeline that:
-  Restores dependencies
-  Builds the solution
-  Runs tests (when present)
+- Restores dependencies
+- Builds the solution
+- Runs tests (when present)
 CI runs automatically on:
-  Pushes to main
-  Pull requests targeting main
+- Pushes to main
+- Pull requests targeting main
 
 📌 Author Notes
 This project demonstrates:
-Real-world API design in .NET 8
-Clean architecture and layering
-Secure configuration management
-Observability-first mindset
-Production-ready practices
+- Real-world API design in .NET 8
+- Clean architecture and layering
+- Secure configuration management
+- Observability-first mindset
+- Production-ready practices
 
 Feel free to fork, explore, or extend this project.
 
