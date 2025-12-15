@@ -94,9 +94,9 @@ This file is ignored by Git and should never be committed.
 ###3️⃣ Run the API
 
 From the solution root:
-dotnet restore
-dotnet build
-dotnet run --project WeatherApi.Api
+- dotnet restore
+- dotnet build
+- dotnet run --project WeatherApi.Api
 
 ###4️⃣ Open API documentation
 
@@ -121,7 +121,7 @@ Configuration precedence
 - User Secrets (Development only)
 - Environment variables
 
-📈 Observability
+📈 Observability:
 The API is instrumented with OpenTelemetry:
 - Traces: HTTP requests and outbound calls
 - Metrics: runtime, HTTP, and custom metrics
@@ -131,11 +131,11 @@ Metrics endpoint:
 - /metrics
 (Prometheus-compatible)
 
-🚦 Rate Limiting
+🚦 Rate Limiting:
 Global rate limiting is enabled to protect the API from abuse and ensure fair usage.
 Limits are configurable and applied consistently across endpoints.
 
-🧪 Continuous Integration
+🧪 Continuous Integration:
 The repository includes a GitHub Actions CI pipeline that:
 - Restores dependencies
 - Builds the solution
@@ -144,7 +144,7 @@ CI runs automatically on:
 - Pushes to main
 - Pull requests targeting main
 
-📌 Author Notes
+📌 Author Notes:
 This project demonstrates:
 - Real-world API design in .NET 8
 - Clean architecture and layering
