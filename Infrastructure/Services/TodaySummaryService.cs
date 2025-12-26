@@ -57,5 +57,51 @@ namespace WeatherApi.Infrastructure.Services
                 Astronomy = astronomy
             };
         }
+
+        public async Task<DailyInsightResult?> GetDailyInsightAsync(
+            string city,
+            CancellationToken cancellationToken)
+        {
+            var summary = await GetTodaySummaryAsync(city, cancellationToken);
+            if (summary == null) return null;
+
+            var current = summary.Current;
+            var forecast = summary.ForecastToday;
+
+            var reasons = new List<string>();
+
+            if (current.FeelsLike >= 35)
+                reasons.Add($"Feels like {current.FeelsLike:0}°C");
+
+            if (forecast.ChanceOfRain >= 50)
+                reasons.Add($"Rain chance {forecast.ChanceOfRain}%");
+
+            if (current.Uv >= 8)
+                reasons.Add($"High UV index ({current.Uv})");
+
+            if (current.AirQuality?.UsEpaIndex >= 4)
+                reasons.Add("Poor air quality");
+
+            var summaryText =
+                current.FeelsLike >= 35
+                    ? "Hot and potentially uncomfortable day."
+                    : forecast.ChanceOfRain >= 60
+                        ? "Rainy conditions likely today."
+                        : "Generally comfortable weather conditions.";
+
+            return new DailyInsightResult
+            {
+                City = current.City,
+                Summary = summaryText,
+                Confidence = "High",
+                Reasons = reasons,
+                BestOutdoorTime = "Early morning (6–9 AM)",
+                WorstOutdoorTime = "Midday to afternoon (12–4 PM)",
+                Recommendation =
+                    reasons.Any()
+                        ? "Plan outdoor activities carefully and take precautions."
+                        : "A good day for outdoor activities."
+            };
+        }
     }
 }

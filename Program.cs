@@ -44,6 +44,19 @@ namespace WeatherApi.Api
             // Controllers
             builder.Services.AddControllers();
 
+            // -------- CORS --------
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("PublicCorsPolicy", policy =>
+                {
+                    policy
+                        .AllowAnyOrigin()
+                        .AllowAnyMethod()
+                        .AllowAnyHeader();
+                });
+            });
+
+
             // Swagger (OpenAPI)
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen(options =>
@@ -189,6 +202,8 @@ namespace WeatherApi.Api
             app.UseApiExceptionHandling();
 
             app.UseHttpsRedirection();
+
+            app.UseCors("PublicCorsPolicy");
 
             app.UseAuthorization();
             app.UseMiddleware<ExceptionHandlingMiddleware>();

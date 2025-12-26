@@ -25,5 +25,10 @@ namespace WeatherApi.Application.Interfaces
         /// or <c>null</c> if no data is found for the specified location.
         /// </returns>
         Task<TodaySummaryResult?> GetTodaySummaryAsync(string city, CancellationToken cancellationToken);
+
+        /// <summary>
+        /// Generates a human-friendly daily weather insight.
+        /// </summary>
+        Task<DailyInsightResult?> GetDailyInsightAsync(string city, CancellationToken cancellationToken);
     }
 }
