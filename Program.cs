@@ -91,6 +91,8 @@ namespace WeatherApi.Api
             builder.Services.AddScoped<ITodaySummaryService, TodaySummaryService>();
             builder.Services.AddScoped<IWeatherAdviceService, WeatherAdviceService>();
             builder.Services.AddScoped<ITravelScoreService, TravelScoreService>();
+            builder.Services.AddScoped<IOccupationWeatherService, OccupationWeatherService>();
+
 
             // Bind WeatherApiOptions
             builder.Services.Configure<WeatherApiOptions>(
