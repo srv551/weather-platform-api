@@ -89,14 +89,17 @@ namespace WeatherApi.Infrastructure.Services
                         ? "Rainy conditions likely today."
                         : "Generally comfortable weather conditions.";
 
+            var (bestTime, worstTime) =
+            InsightTimeWindowCalculator.Calculate(current, forecast, summary.Astronomy);
+
             return new DailyInsightResult
             {
                 City = current.City,
                 Summary = summaryText,
                 Confidence = "High",
                 Reasons = reasons,
-                BestOutdoorTime = "Early morning (6–9 AM)",
-                WorstOutdoorTime = "Midday to afternoon (12–4 PM)",
+                BestOutdoorTime = bestTime,
+                WorstOutdoorTime = worstTime,
                 Recommendation =
                     reasons.Any()
                         ? "Plan outdoor activities carefully and take precautions."
