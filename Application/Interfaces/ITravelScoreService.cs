@@ -28,5 +28,12 @@ namespace WeatherApi.Application.Interfaces
         Task<TravelScoreResult?> GetTravelScoreAsync(
             string city,
             CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Returns an explainable breakdown of today's travel score.
+        /// </summary>
+        Task<TravelScoreExplanationResult?> ExplainTravelScoreAsync(
+            string city,
+            CancellationToken cancellationToken = default);
     }
 }

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using WeatherApi.Application.DTOs;
 using WeatherApi.Application.Interfaces;
+using WeatherApi.Infrastructure.Services;
 
 namespace WeatherApi.Api.Controllers.V1
 {
@@ -11,10 +12,12 @@ namespace WeatherApi.Api.Controllers.V1
     public class InsightsController : ControllerBase
     {
         private readonly ITodaySummaryService _todaySummaryService;
+        private readonly ITravelScoreService _travelScoreService;
 
-        public InsightsController(ITodaySummaryService todaySummaryService)
+        public InsightsController(ITodaySummaryService todaySummaryService, ITravelScoreService travelScoreService)
         {
             _todaySummaryService = todaySummaryService;
+            _travelScoreService = travelScoreService;
         }
 
         /// <summary>
@@ -28,6 +31,21 @@ namespace WeatherApi.Api.Controllers.V1
             CancellationToken cancellationToken)
         {
             var result = await _todaySummaryService.GetDailyInsightAsync(city, cancellationToken);
+
+            return result == null
+                ? NotFound()
+                : Ok(result);
+        }
+
+        [HttpGet("explain/travel-score/{city}")]
+        [ProducesResponseType(typeof(TravelScoreExplanationResult), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> ExplainTravelScore(
+        string city,
+        CancellationToken cancellationToken)
+        {
+            var result = await _travelScoreService
+                .ExplainTravelScoreAsync(city, cancellationToken);
 
             return result == null
                 ? NotFound()

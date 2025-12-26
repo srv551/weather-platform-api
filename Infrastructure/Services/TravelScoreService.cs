@@ -83,6 +83,68 @@ namespace WeatherApi.Infrastructure.Services
             };
         }
 
+        public async Task<TravelScoreExplanationResult?> ExplainTravelScoreAsync(
+    string city,
+    CancellationToken cancellationToken = default)
+        {
+            var score = await GetTravelScoreAsync(city, cancellationToken);
+            if (score == null)
+                return null;
+
+            var breakdown = new Dictionary<string, string>
+            {
+                ["Temperature"] = ExplainTemperature(score.TemperatureScore),
+                ["Rain"] = ExplainRain(score.RainScore),
+                ["UV Index"] = ExplainUv(score.UvScore),
+                ["Air Quality"] = ExplainAirQuality(score.AirQualityScore)
+            };
+
+            return new TravelScoreExplanationResult
+            {
+                City = score.City,
+                OverallScore = score.OverallScore,
+                ComfortLabel = score.ComfortLabel,
+                Confidence = "High",
+                Breakdown = breakdown,
+                Explanation =
+                    $"Today's travel score is {score.OverallScore}/100 ({score.ComfortLabel}). " +
+                    $"Weather conditions are assessed based on temperature, rain probability, UV exposure, and air quality."
+            };
+        }
+
+        private static string ExplainTemperature(int score) =>
+            score switch
+            {
+                >= 22 => "Comfortable temperature range for most activities.",
+                >= 15 => "Slightly warm or cool but generally manageable.",
+                _ => "Temperature may feel uncomfortable for prolonged outdoor activity."
+            };
+
+        private static string ExplainRain(int score) =>
+            score switch
+            {
+                >= 22 => "Low chance of rain with minimal disruption.",
+                >= 15 => "Some chance of showers; minor inconvenience possible.",
+                _ => "High likelihood of rain affecting outdoor plans."
+            };
+
+        private static string ExplainUv(int score) =>
+            score switch
+            {
+                >= 22 => "Low to moderate UV levels.",
+                >= 15 => "Elevated UV; sun protection recommended.",
+                _ => "High UV exposure risk; avoid prolonged sun exposure."
+            };
+
+        private static string ExplainAirQuality(int score) =>
+            score switch
+            {
+                >= 22 => "Air quality is good and suitable for outdoor activities.",
+                >= 15 => "Moderate air quality; sensitive individuals should be cautious.",
+                _ => "Poor air quality; outdoor exertion is not recommended."
+            };
+
+
         /// <summary>
         /// Computes the temperature component of the travel score (0–25).
         /// </summary>
