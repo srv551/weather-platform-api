@@ -7,26 +7,26 @@ namespace WeatherApi.Api.Controllers.V1
 {
     [ApiController]
     [ApiVersion("1.0")]
-    [Route("api/v{version:apiVersion}/occupation")]
-    public class OccupationController : ControllerBase
+    [Route("api/v{version:apiVersion}/health")]
+    public class HealthController : ControllerBase
     {
-        private readonly IOccupationWeatherService _service;
+        private readonly IHealthWeatherService _service;
 
-        public OccupationController(IOccupationWeatherService service)
+        public HealthController(IHealthWeatherService service)
         {
             _service = service;
         }
 
         /// <summary>
-        /// Returns occupation-based weather insights.
+        /// Returns health-aware weather insights for a specific condition.
         /// </summary>
         [HttpGet("{city}")]
-        public async Task<IActionResult> GetOccupationInsight(
+        public async Task<IActionResult> GetHealthInsight(
             string city,
-            [FromQuery] OccupationType occupation,
+            [FromQuery] HealthConditionType condition,
             CancellationToken cancellationToken)
         {
-            var result = await _service.GetOccupationInsightAsync(city, occupation, cancellationToken);
+            var result = await _service.GetHealthInsightAsync(city, condition, cancellationToken);
             return result == null ? NotFound() : Ok(result);
         }
     }

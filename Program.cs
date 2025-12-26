@@ -3,15 +3,16 @@ using Asp.Versioning.ApiExplorer;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Http.Resilience;
 using OpenTelemetry;
-using OpenTelemetry.Metrics;
-using OpenTelemetry.Trace;
-using OpenTelemetry.Resources;
-using OpenTelemetry.Logs;
 using OpenTelemetry.Instrumentation.Runtime;
+using OpenTelemetry.Logs;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 using Scalar.AspNetCore;
 using Swashbuckle.AspNetCore.Filters;
 using System.IO;
 using System.Reflection;
+using System.Text.Json.Serialization;
 using System.Threading.RateLimiting;
 using WeatherApi.Api.Middleware;
 using WeatherApi.Api.Swagger.Examples;
@@ -42,7 +43,12 @@ namespace WeatherApi.Api
 
 
             // Controllers
-            builder.Services.AddControllers();
+            builder.Services.AddControllers()
+            .AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.Converters.Add(
+                    new JsonStringEnumConverter());
+            });
 
             // -------- CORS --------
             builder.Services.AddCors(options =>
@@ -79,6 +85,8 @@ namespace WeatherApi.Api
 
                 // Examples
                 options.ExampleFilters();
+
+                options.UseInlineDefinitionsForEnums();
             });
 
             // register Swagger examples (from API assembly)
@@ -92,6 +100,7 @@ namespace WeatherApi.Api
             builder.Services.AddScoped<IWeatherAdviceService, WeatherAdviceService>();
             builder.Services.AddScoped<ITravelScoreService, TravelScoreService>();
             builder.Services.AddScoped<IOccupationWeatherService, OccupationWeatherService>();
+            builder.Services.AddScoped<IHealthWeatherService, HealthWeatherService>();
 
 
             // Bind WeatherApiOptions

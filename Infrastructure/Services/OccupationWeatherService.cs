@@ -1,4 +1,5 @@
-﻿using WeatherApi.Application.DTOs;
+﻿using WeatherApi.Application.Domain;
+using WeatherApi.Application.DTOs;
 using WeatherApi.Application.Interfaces;
 
 namespace WeatherApi.Infrastructure.Services
@@ -15,24 +16,27 @@ namespace WeatherApi.Infrastructure.Services
             _todaySummaryService = todaySummaryService;
         }
 
-        public async Task<OccupationWeatherResult?> GetOccupationWeatherAsync(
+        public async Task<OccupationWeatherResult?> GetOccupationInsightAsync(
             string city,
-            string occupation,
+            OccupationType occupation,
             CancellationToken cancellationToken = default)
-        {
-            var summary = await _todaySummaryService.GetTodaySummaryAsync(city, cancellationToken);
-            if (summary == null) return null;
+            {
 
-            occupation = occupation.Trim().ToLowerInvariant();
+            var summary = await _todaySummaryService.GetTodaySummaryAsync(city, cancellationToken);
+            if (summary == null)
+                return null;
 
             return occupation switch
             {
-                "farmer" => BuildFarmerAdvice(summary),
-                "officeworker" => BuildOfficeWorkerAdvice(summary),
-                "delivery" => BuildDeliveryAdvice(summary),
-                "construction" => BuildConstructionAdvice(summary),
-                "traveler" => BuildTravelerAdvice(summary),
-                _ => BuildGenericAdvice(summary, occupation)
+                OccupationType.Farmer => BuildFarmerAdvice(summary),
+                OccupationType.OfficeWorker => BuildOfficeWorkerAdvice(summary),
+                OccupationType.DeliveryExecutive => BuildDeliveryAdvice(summary),
+                OccupationType.ConstructionWorker => BuildConstructionAdvice(summary),
+                OccupationType.Tourist => BuildTravelerAdvice(summary),
+                OccupationType.OutdoorVendor => BuildOutdoorVendorAdvice(summary),
+                OccupationType.Athlete => BuildAthleteAdvice(summary),
+                OccupationType.SchoolStudent => BuildStudentAdvice(summary),
+                _ => BuildGenericAdvice(summary, occupation.ToString())
             };
         }
 
@@ -230,15 +234,128 @@ namespace WeatherApi.Infrastructure.Services
             );
         }
 
+        private static OccupationWeatherResult BuildOutdoorVendorAdvice(TodaySummaryResult s)
+        {
+            var opportunities = new List<string>
+    {
+        "Daytime foot traffic is possible depending on weather conditions."
+    };
+
+            var risks = new List<string>();
+            var actions = new List<string>();
+            int score = 75;
+            string bestTime = "Morning and evening";
+
+            if (s.Current.FeelsLike > 35)
+            {
+                risks.Add("Heat exposure during long outdoor hours.");
+                actions.Add("Use shade, hydrate frequently, and take short breaks.");
+                score -= 15;
+            }
+
+            if (s.ForecastToday.ChanceOfRain > 40)
+            {
+                risks.Add("Rain may reduce customer activity.");
+                actions.Add("Use waterproof coverings for stall and goods.");
+                score -= 10;
+            }
+
+            return BuildResult(
+                s,
+                "OutdoorVendor",
+                score,
+                opportunities,
+                risks,
+                actions,
+                bestTime
+            );
+        }
+
+        private static OccupationWeatherResult BuildAthleteAdvice(TodaySummaryResult s)
+        {
+            var opportunities = new List<string>
+    {
+        "Conditions allow physical activity with proper precautions."
+    };
+
+            var risks = new List<string>();
+            var actions = new List<string>();
+            int score = 80;
+            string bestTime = "Early morning";
+
+            if (s.Current.Uv > 7)
+            {
+                risks.Add("High UV exposure during training.");
+                actions.Add("Train early morning or late evening and use sun protection.");
+                score -= 10;
+            }
+
+            if (s.Current.FeelsLike > 34)
+            {
+                risks.Add("Heat exhaustion risk.");
+                actions.Add("Reduce intensity and increase hydration.");
+                score -= 15;
+            }
+
+            return BuildResult(
+                s,
+                "Athlete",
+                score,
+                opportunities,
+                risks,
+                actions,
+                bestTime
+            );
+        }
+
+        private static OccupationWeatherResult BuildStudentAdvice(TodaySummaryResult s)
+        {
+            var opportunities = new List<string>
+        {
+            "School activities can proceed with minor adjustments."
+        };
+
+            var risks = new List<string>();
+            var actions = new List<string>();
+            int score = 85;
+            string bestTime = "School hours";
+
+            if (s.ForecastToday.ChanceOfRain > 50)
+            {
+                risks.Add("Rain may affect school commute.");
+                actions.Add("Ensure rain protection and safe transport.");
+                score -= 10;
+            }
+
+            if (s.Current.AirQuality?.UsEpaIndex >= 3)
+            {
+                risks.Add("Air quality may affect outdoor play.");
+                actions.Add("Limit outdoor sports or conduct indoor activities.");
+                score -= 10;
+            }
+
+            return BuildResult(
+                s,
+                "SchoolStudent",
+                score,
+                opportunities,
+                risks,
+                actions,
+                bestTime
+            );
+        }
+
+
+
         // ---------- Generic ----------
         private static OccupationWeatherResult BuildGenericAdvice(
             TodaySummaryResult s,
             string occupation)
         {
             var opportunities = new List<string>
-    {
-        "General weather conditions are acceptable for routine activities."
-    };
+        {
+            "General weather conditions are acceptable for routine activities."
+        };
 
             var risks = new List<string>();
             var actions = new List<string>();
@@ -254,34 +371,6 @@ namespace WeatherApi.Infrastructure.Services
                 bestTime
             );
         }
-
-
-
-        //private static OccupationWeatherResult BuildResult(
-        //    TodaySummaryResult s,
-        //    string occupation,
-        //    int score,
-        //    List<string> insights,
-        //    List<string> warnings)
-        //{
-        //    score = Math.Clamp(score, 0, 100);
-
-        //    return new OccupationWeatherResult
-        //    {
-        //        City = s.Current.City,
-        //        Occupation = occupation,
-        //        SuitabilityScore = score,
-        //        SuitabilityLabel = score switch
-        //        {
-        //            >= 80 => "Excellent",
-        //            >= 60 => "Good",
-        //            >= 40 => "Moderate",
-        //            _ => "Poor"
-        //        },
-        //        Insights = insights,
-        //        Warnings = warnings
-        //    };
-        //}
 
         private static OccupationWeatherResult BuildResult(
         TodaySummaryResult summary,

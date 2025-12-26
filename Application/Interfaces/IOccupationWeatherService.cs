@@ -1,4 +1,5 @@
-﻿using WeatherApi.Application.DTOs;
+﻿using WeatherApi.Application.Domain;
+using WeatherApi.Application.DTOs;
 
 namespace WeatherApi.Application.Interfaces
 {
@@ -10,9 +11,9 @@ namespace WeatherApi.Application.Interfaces
         /// <summary>
         /// Returns weather guidance tailored to a specific occupation.
         /// </summary>
-        Task<OccupationWeatherResult?> GetOccupationWeatherAsync(
+        Task<OccupationWeatherResult?> GetOccupationInsightAsync(
             string city,
-            string occupation,
+            OccupationType occupation,
             CancellationToken cancellationToken = default);
     }
 }
